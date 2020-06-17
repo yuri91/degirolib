@@ -10,8 +10,32 @@ const BASE_URL = "https://trader.degiro.nl";
 let user = expect(Deno.env.get('DEGIRO_USER'), "DEGIRO_USER not in env");
 let pass = expect(Deno.env.get('DEGIRO_PASS'), "DEGIRO_PASS not in env");
 
+interface APIConfig {
+	tradingUrl: string,
+	paUrl: string,
+	reportingUrl: string,
+	paymentServiceUrl: string,
+	cashSolutionsUrl: string,
+	productSearchUrl: string,
+	dictionaryUrl: string,
+	productTypesUrl: string,
+	companiesServiceUrl: string,
+	i18nUrl: string,
+	vwdQuotecastServiceUrl: string,
+	vwdNewsUrl: string,
+	vwdGossipsUrl: string,
+	firstLoginWizardUrl: string,
+	taskManagerUrl: string,
+	landingPath: string,
+	betaLandingPath: string,
+	mobileLandingPath: string,
+	loginUrl: string,
+	sessionId: string,
+	clientId: number,
+};
 class Degiro {
 	sessionid: string | undefined;
+	config: APIConfig | undefined;
 	constructor() {
 	}
 
@@ -43,7 +67,13 @@ class Degiro {
 		const data = encoder.encode(this.sessionid);
 		await Deno.writeFile(path, data);
 	}
-
+	async getConfig(): Promise<void> {
+		const url = `${BASE_URL}/login/secure/config`;
+		let res = await fetch(url, {
+			headers: {Cookie: `JSESSIONID=${this.sessionid};`},
+		});
+		this.config = <APIConfig>((await res.json()).data);
+	}
 }
 
 const degiro = new Degiro();
