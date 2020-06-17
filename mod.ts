@@ -74,6 +74,12 @@ class Degiro {
 		});
 		this.config = <APIConfig>((await res.json()).data);
 	}
+	async getClientInfo(): Promise<void> {
+		const config = expect(this.config, "No config");
+		const url = `${config.paUrl}client?sessionId=${this.sessionid}`;
+		let res = await fetch(url);
+		console.log( await res.json());
+	}
 }
 
 const degiro = new Degiro();
